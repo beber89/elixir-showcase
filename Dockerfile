@@ -15,7 +15,4 @@ RUN mix local.hex --force
 # Install project dependencies
 RUN mix deps.get
 
-# Compile the project
-RUN mix ecto.create
-
 CMD ["/app/entrypoint.sh"]

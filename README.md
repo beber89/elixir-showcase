@@ -7,7 +7,11 @@ This is a showcase for an Elixir app / Phoenix framework, it consumes GraphQl Ap
 - Querying the items
 
 ## Run
-- Navigate to the project root directory
+- Navigate to the project root directory to pull and build required docker images
+```
+$ docker-compose build
+```
+- Now run containers
 ```
 $ docker-compose up -d
 ```
