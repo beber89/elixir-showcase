@@ -32,4 +32,7 @@ services:
       # Set user/password for Postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    ## In case we like to access the db from postbird
+    ports:
+      - "5432:5432"
     restart: always

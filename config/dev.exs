@@ -3,7 +3,11 @@ use Mix.Config
 # Configure your database
 config :todo_app, TodoApp.Repo,
   ## TODO: Take from env vars
-  url: "postgres://postgres:postgres@db:5432/todo_app_dev",
+  # url: "postgres://postgres:postgres@db:5432/todo_app_dev",
+  username: "postgres",
+  password: "postgres",
+  database: "todo_app_dev",
+  hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
