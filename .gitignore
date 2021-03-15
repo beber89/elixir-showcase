@@ -27,3 +27,9 @@ todo_app-*.tar
 # this depending on your deployment strategy.
 /priv/static/
 backlog.md
+
+# If NPM crashes, it generates a log, let's ignore it too.
+npm-debug.log
+
+# The directory NPM downloads your dependencies sources to.
+/assets/node_modules/

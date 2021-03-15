@@ -1,6 +1,12 @@
 defmodule TodoAppWeb.Router do
   use TodoAppWeb, :router
-
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -10,6 +16,11 @@ defmodule TodoAppWeb.Router do
 
     get "/", Absinthe.Plug.GraphiQL, schema: TodoApp.Graphql.Schema , interface: :playground
     post "/", Absinthe.Plug, schema: TodoApp.Graphql.Schema
+  end
+  scope "/", TodoAppWeb do
+    pipe_through :browser
+
+    get "/", PageController, :index
   end
 
   # Enables LiveDashboard only for development
