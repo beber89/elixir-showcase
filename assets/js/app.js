@@ -18,7 +18,7 @@ import "phoenix_html"
 import React from "react";
 import ReactDOM from "react-dom";
 
-import App from "./app";
+import App from "./App";
 
 const app = document.getElementById("app");
 ReactDOM.render(<App name="Phoenix" />, app);
