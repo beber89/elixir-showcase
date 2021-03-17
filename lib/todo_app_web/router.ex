@@ -21,6 +21,7 @@ defmodule TodoAppWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/home", PageController, :index
   end
 
   # Enables LiveDashboard only for development

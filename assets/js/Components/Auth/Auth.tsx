@@ -8,6 +8,7 @@ import {TextField
     , Typography
 } from '@material-ui/core';
 import {useForm, UseFormMethods} from 'react-hook-form';
+import { useHistory } from 'react-router-dom'
 
 type DispatcherT = React.Dispatch<React.SetStateAction<PageState>>
 
@@ -83,7 +84,7 @@ const onSubmitLogin = async (values:FormDataLoginT) => {
         console.log(await response.json() );
 };
 
-function SignInBox(state: PageState, dispatcher: DispatcherT, formHooks: UseFormMethods<FormDataLoginT>) {
+function SignInBox(state: PageState, dispatcher: DispatcherT, formHooks: UseFormMethods<FormDataLoginT>, history: any) {
     const { register, handleSubmit, errors } = formHooks;
     return (
         <form onSubmit={handleSubmit(onSubmitLogin)}  >
@@ -95,9 +96,12 @@ function SignInBox(state: PageState, dispatcher: DispatcherT, formHooks: UseForm
                 <TextField inputRef={register} fullWidth required name="userPassword" type="password" label="password" variant="outlined"/>
             </Grid>
             <Grid item>
-                <Button type="submit"  variant="contained" color="primary" disableElevation>
+                <Button onClick={()=>{console.log("some"); history.push('/home');}}  variant="contained" color="primary" disableElevation>
                     SIGN IN
                 </Button>
+                {/* <Button type="submit"  variant="contained" color="primary" disableElevation>
+                    SIGN IN
+                </Button> */}
             </Grid>
             <Grid item>
                 <Typography 
@@ -160,8 +164,9 @@ function SignUpBox(state: PageState, dispatcher: DispatcherT, formHooks: UseForm
 function Auth() {
     let [pageState, stateDispatcher] = 
       React.useState<PageState>({pageChosen: PageChosenEnum.SigninPage});
-    const formHooksLogin = useForm<FormDataLoginT>()
-    const formHooksReg = useForm<FormDataRegT>()
+    const formHooksLogin = useForm<FormDataLoginT>();
+    const formHooksReg = useForm<FormDataRegT>();
+    const history = useHistory();
     
     return (
         <Container  
@@ -173,7 +178,7 @@ function Auth() {
             <Card  variant="outlined"  style={{padding: "4ex"}}>
                 {
                     pageState.pageChosen == PageChosenEnum.SigninPage?
-                    SignInBox(pageState, stateDispatcher, formHooksLogin)
+                    SignInBox(pageState, stateDispatcher, formHooksLogin, history)
                     :SignUpBox(pageState, stateDispatcher, formHooksReg)
                 }
             </Card>

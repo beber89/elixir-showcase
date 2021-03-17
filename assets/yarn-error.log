@@ -1,8 +1,8 @@
 Arguments: 
-  /home/nti/.nvm/versions/node/v14.15.5/bin/node /usr/share/yarn/bin/yarn.js add @types/react-hook-form -D
+  /home/nti/.nvm/versions/node/v14.15.5/bin/node /usr/share/yarn/bin/yarn.js add react-router-dom
 
 PATH: 
-  /home/nti/.vscode-server/bin/fd6f3bce6709b121a895d042d343d71f317d74e7/bin:/home/nti/.local/bin:/home/nti/.nvm/versions/node/v14.15.5/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files/Python37/Scripts/:/mnt/c/Program Files/Python37/:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Intel/WiFi/bin/:/mnt/c/Program Files/Common Files/Intel/WirelessCommon/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files (x86)/Intel/Intel(R) Management Engine Components/DAL:/mnt/c/Program Files/Intel/Intel(R) Management Engine Components/DAL:/mnt/c/Program Files (x86)/Yarn/bin/:/mnt/c/Users/NTI/AppData/Local/Yarn/Data/global/node_modules/.bin:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Amazon/AWSCLIV2/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/NTI/.windows-build-tools/python27/:/mnt/c/Users/NTI/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/NTI/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/NTI/Developer/frameworks/flutter/bin:/mnt/c/Users/NTI/AppData/Local/Android/Sdk/platform-tools:/mnt/c/Program Files/Android/Android Studio/jre/bin:/mnt/c/Users/NTI/AppData/Local/Yarn/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Community Edition 2020.2.2/bin:/mnt/d/Programs/MiKTex/miktex/bin/x64/:/mnt/c/Users/NTI/anaconda3:/mnt/c/Users/NTI/.ebcli-virtual-env/executables:/mnt/c/Users/NTI/AppData/Roaming/nvm:/mnt/c/Program Files/nodejs:/snap/bin
+  /home/nti/.vscode-server/bin/2b9aebd5354a3629c3aba0a5f5df49f43d6689f8/bin:/home/nti/.local/bin:/home/nti/.nvm/versions/node/v14.15.5/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files/Python37/Scripts/:/mnt/c/Program Files/Python37/:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Intel/WiFi/bin/:/mnt/c/Program Files/Common Files/Intel/WirelessCommon/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files (x86)/Intel/Intel(R) Management Engine Components/DAL:/mnt/c/Program Files/Intel/Intel(R) Management Engine Components/DAL:/mnt/c/Program Files (x86)/Yarn/bin/:/mnt/c/Users/NTI/AppData/Local/Yarn/Data/global/node_modules/.bin:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Amazon/AWSCLIV2/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/NTI/.windows-build-tools/python27/:/mnt/c/Users/NTI/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/NTI/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/NTI/Developer/frameworks/flutter/bin:/mnt/c/Users/NTI/AppData/Local/Android/Sdk/platform-tools:/mnt/c/Program Files/Android/Android Studio/jre/bin:/mnt/c/Users/NTI/AppData/Local/Yarn/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Community Edition 2020.2.2/bin:/mnt/d/Programs/MiKTex/miktex/bin/x64/:/mnt/c/Users/NTI/anaconda3:/mnt/c/Users/NTI/.ebcli-virtual-env/executables:/mnt/c/Users/NTI/AppData/Roaming/nvm:/mnt/c/Program Files/nodejs:/snap/bin
 
 Yarn version: 
   1.22.5
@@ -14,17 +14,8 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2freact-hook-form: Not found
-      at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:66988:18)
-      at Request.self.callback (/usr/share/yarn/lib/cli.js:140749:22)
-      at Request.emit (events.js:315:20)
-      at Request.<anonymous> (/usr/share/yarn/lib/cli.js:141721:10)
-      at Request.emit (events.js:315:20)
-      at IncomingMessage.<anonymous> (/usr/share/yarn/lib/cli.js:141643:12)
-      at Object.onceWrapper (events.js:421:28)
-      at IncomingMessage.emit (events.js:327:22)
-      at endReadableNT (internal/streams/readable.js:1327:12)
-      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+  Error: getaddrinfo EAI_AGAIN registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:67:26)
 
 npm manifest: 
   {
