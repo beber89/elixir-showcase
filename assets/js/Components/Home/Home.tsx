@@ -16,8 +16,8 @@ import {TextField
     , ListItemSecondaryAction
     , IconButton
     , ListItemText
-    , Checkbox,
-    Paper
+    , Checkbox
+    , Paper
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
@@ -25,6 +25,8 @@ import {useQuery, useMutation} from '@apollo/client';
 import {GET_TODOS
     , CREATE_TODO
     , DELETE_TODO
+    , EDIT_TODO
+    , TOGGLE_TODO
 } from './todos.gql';
 import {v4 as uuidv4} from 'uuid';
 
@@ -35,6 +37,12 @@ interface TodoItem {
 }
 type ItemsDtoT =  {
     itemsDto: TodoItem[]
+}
+
+interface EditingProps {
+    modalOpen: boolean;
+    content?: string;
+    id?: number;
 }
 
 
@@ -79,11 +87,16 @@ function generate(element: React.ReactElement) {
 const Home: React.FC = (props: any) => {
     const [modalOpen, setModalOpen] = React.useState(false);
     const [textEntry, setTextEntry] = React.useState("");
-    const {loading, error, data: itemsDto, refetch} = useQuery<ItemsDtoT>(GET_TODOS);
-    const [todos, setTodos] = React.useState<TodoItem[]>(Array<TodoItem>());
+    const [userEditing, setUserEditing] = 
+      React.useState<EditingProps>({modalOpen: false});
 
+
+
+    const {loading, error, data: itemsDto, refetch} = useQuery<ItemsDtoT>(GET_TODOS);
     const [createTodoItem] = useMutation(CREATE_TODO);
     const [deleteTodoItem] = useMutation(DELETE_TODO);
+    const [editTodoItem] = useMutation(EDIT_TODO);
+    const [toggleTodoItem] = useMutation(TOGGLE_TODO);
 
 
     const classes = useStyles();
@@ -115,9 +128,34 @@ const Home: React.FC = (props: any) => {
                     InputProps={{endAdornment: <Button onClick={() => {
                         if (textEntry != ""){
                             createTodoItem({variables: { content: textEntry  }});
+                            setTextEntry("");
+                            refetch();
                         }
-                        setTextEntry("");
                         setModalOpen(false);
+                    }}><DoneIcon/></Button>}}
+                />
+                </div>
+            </Modal>
+
+            <Modal
+            open={userEditing.modalOpen}
+            onClose={()=>{setUserEditing({modalOpen: false})}}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            >
+                <div className={classes.paper}>
+                <TextField
+                    rows = {5}
+                    multiline
+                    defaultValue = {userEditing.content}
+                    onChange = {(e) => setUserEditing({...userEditing, content: e.target.value})}
+                    InputProps={{endAdornment: <Button onClick={() => {
+                        if (userEditing.content != ""){
+                            editTodoItem({variables: { content: userEditing.content, id: userEditing.id  }});
+                        } else {
+                            deleteTodoItem({variables: {id: userEditing.id}});
+                        }
+                        setUserEditing({modalOpen: false});
                         refetch();
                     }}><DoneIcon/></Button>}}
                 />
@@ -126,15 +164,18 @@ const Home: React.FC = (props: any) => {
             <Grid item xs={12} md={6}>
             <Paper className={classes.demo}>
                 <List>
-                    {itemsDto?.itemsDto.map ( todoItem => 
+                    {itemsDto?.itemsDto.filter(a => !a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
                     <ListItem key={uuidv4()}>
                         <ListItemAvatar>
                             <Checkbox
-                            onChange = {handleChange}
+                            onChange = {() => {
+                                toggleTodoItem({variables: {id: todoItem.id}});
+                                refetch();
+                            }}
                             inputProps={{ 'aria-label': 'primary checkbox' }}
                             />
                         </ListItemAvatar>
-                        <ListItemText
+                        <ListItemText onDoubleClick ={()=>setUserEditing({modalOpen: true, content: todoItem.content, id: todoItem.id})}
                             primary={todoItem.content}
                         />
                         <ListItemSecondaryAction>
@@ -149,24 +190,35 @@ const Home: React.FC = (props: any) => {
                         </ListItemSecondaryAction>
                     </ListItem>  
                     )}
-                {/* {generate(
-                    <ListItem>
+                </List>
+                <List style={{backgroundColor: "grey"}}>
+                    {itemsDto?.itemsDto.filter(a => a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
+                    <ListItem key={uuidv4()}>
                         <ListItemAvatar>
                             <Checkbox
-                            onChange = {handleChange}
+                            defaultChecked={true}
+                            onChange = {() => {
+                                toggleTodoItem({variables: {id: todoItem.id}});
+                                refetch();
+                            }}
                             inputProps={{ 'aria-label': 'primary checkbox' }}
                             />
                         </ListItemAvatar>
-                        <ListItemText
-                            primary="Single-line item"
+                        <ListItemText style={{textDecoration: "line-through"}}
+                            primary={todoItem.content}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="delete">
+                            <IconButton  edge="end" aria-label="delete" onClick = {
+                                () => {
+                                    deleteTodoItem({variables: {id: todoItem.id}});
+                                    refetch();
+                                }
+                            }>
                             <DeleteIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
-                    </ListItem>,
-                )} */}
+                    </ListItem>  
+                    )}
                 </List>
             </Paper>
             </Grid>
