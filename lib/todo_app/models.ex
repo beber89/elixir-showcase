@@ -22,6 +22,20 @@ defmodule TodoApp.Models do
   end
 
   @doc """
+  Returns the list of items for a given session
+
+  ## Examples
+
+      iex> list_items(session)
+      [%Item{}, ...]
+
+  """
+  def list_items(session) do
+    query = from(item in Item, where: item.session == ^session)
+    Repo.all(query)
+  end
+
+  @doc """
   Gets a single item.
 
   Raises `Ecto.NoResultsError` if the Item does not exist.

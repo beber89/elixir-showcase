@@ -5,6 +5,7 @@ defmodule TodoApp.Models.Item do
   schema "items" do
     field :completed_at, :utc_datetime
     field :content, :string
+    field :session, :string
 
     timestamps()
   end
@@ -12,7 +13,7 @@ defmodule TodoApp.Models.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:content, :completed_at])
-    |> validate_required([:content])
+    |> cast(attrs, [:content, :completed_at, :session])
+    |> validate_required([:content, :session])
   end
 end

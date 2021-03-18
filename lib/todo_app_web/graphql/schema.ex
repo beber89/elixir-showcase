@@ -21,10 +21,11 @@ defmodule TodoApp.Graphql.Schema do
         mutation {createTodoItem {content: $content}}
     """
     field :create_todo_item, non_null(:boolean) do
+      arg :session, non_null(:string)
       arg :content, non_null(:string)
 
-      resolve fn %{content: content}, _ ->
-        case TodoApp.Models.create_item(%{content: content}) do
+      resolve fn %{content: content, session: session}, _ ->
+        case TodoApp.Models.create_item(%{session: session, content: content}) do
           {:ok, %TodoApp.Models.Item{}} ->
             {:ok, true}
           _ ->
@@ -80,6 +81,12 @@ defmodule TodoApp.Graphql.Schema do
     field :items_dto, non_null(list_of(:item_dto)) do # [TodoItem!]!
       resolve fn _, _ ->
         {:ok, TodoApp.Models.list_items()}
+      end
+    end
+    field :items_for_session, non_null(list_of(:item_dto)) do # [TodoItem!]!
+      arg(:session, non_null(:string))
+      resolve fn %{session: session}, _ ->
+        {:ok, TodoApp.Models.list_items(session)}
       end
     end
   end
