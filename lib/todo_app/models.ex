@@ -89,6 +89,17 @@ defmodule TodoApp.Models do
     Repo.delete(item)
   end
 
+  def delete_item_by_id(item_id) do
+    case Repo.get(Item, item_id) do
+      nil -> {:error, false}
+      %Item{}= item ->
+        case Repo.delete(item) do
+          {:ok, _} -> {:ok, true}
+          {:error, _} -> {:error, false}
+        end
+    end
+  end
+
   @doc """
   Edit content of Item
 

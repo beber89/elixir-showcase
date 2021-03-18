@@ -46,6 +46,19 @@ defmodule TodoApp.Graphql.Schema do
         TodoApp.Models.edit_todo_item(item_id, content)
       end
     end
+      @doc """
+    Delete a todo item
+
+    ## How to use
+        mutation {delete_todo_item {item: $item}}
+    """
+    field :delete_todo_item, :boolean do
+      arg :id, non_null(:id)
+
+      resolve fn %{id: id}, _ ->
+        TodoApp.Models.delete_item_by_id(id)
+      end
+    end
     @doc """
     Toggle value (DONE|TODO) in the todo Item
 

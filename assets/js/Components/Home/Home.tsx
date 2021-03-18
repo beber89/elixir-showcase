@@ -22,10 +22,14 @@ import {TextField
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import {useQuery, useMutation} from '@apollo/client';
-import {GET_TODOS, CREATE_TODO} from './todos.gql';
+import {GET_TODOS
+    , CREATE_TODO
+    , DELETE_TODO
+} from './todos.gql';
 import {v4 as uuidv4} from 'uuid';
 
 interface TodoItem {
+    id: number;
     content: string;
     isCompleted: boolean;
 }
@@ -79,6 +83,7 @@ const Home: React.FC = (props: any) => {
     const [todos, setTodos] = React.useState<TodoItem[]>(Array<TodoItem>());
 
     const [createTodoItem] = useMutation(CREATE_TODO);
+    const [deleteTodoItem] = useMutation(DELETE_TODO);
 
 
     const classes = useStyles();
@@ -133,7 +138,12 @@ const Home: React.FC = (props: any) => {
                             primary={todoItem.content}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="delete">
+                            <IconButton  edge="end" aria-label="delete" onClick = {
+                                () => {
+                                    deleteTodoItem({variables: {id: todoItem.id}});
+                                    refetch();
+                                }
+                            }>
                             <DeleteIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
