@@ -3,10 +3,7 @@ import {TextField
     , Container
     , Grid
     , Button
-    , Box
-    , Card
     , Modal
-    , Typography
     , createStyles
     , makeStyles
     , Theme
@@ -76,13 +73,49 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-function generate(element: React.ReactElement) {
-    return [0, 1, 2].map((value) =>
-      React.cloneElement(element, {
-        key: value,
-      }),
+// This widget renders two types of lists:
+//  - List of items pending todo
+//  - List of items that are done
+const TodoListWidget = ({items_for_session}: ItemsDtoT, toggleCB: Function, deleteCB: Function, setUserEditingCB?: Function) =>{
+    let doneList = setUserEditingCB? false:true;
+    let listStyle = doneList? {backgroundColor: "grey"}:{};
+    let checked = doneList? true:false;
+    let textStyle = doneList? {textDecoration: "line-through"}:{};
+    return (
+        <List style={listStyle}>
+        { // if it is done list then we seek the completed todo items , otherwise we seek the not yet iscompleted
+          items_for_session.filter(a => doneList? a.isCompleted:!a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
+        <ListItem key={uuidv4()}>
+            <ListItemAvatar>
+                <Checkbox
+                defaultChecked={checked}
+                onChange = {() => {
+                    toggleCB(todoItem.id);
+                }}
+                inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+            </ListItemAvatar>
+            <ListItemText style={textStyle} onDoubleClick ={()=> {
+                if(setUserEditingCB != null) {
+                    setUserEditingCB(todoItem.id, todoItem.content);
+                }
+            }}
+                primary={todoItem.content}
+            />
+            <ListItemSecondaryAction>
+                <IconButton  edge="end" aria-label="delete" onClick = {
+                    () => { 
+                        deleteCB(todoItem.id);
+                    }  
+                }>
+                <DeleteIcon />
+                </IconButton>
+            </ListItemSecondaryAction>
+        </ListItem>  
+        )}
+    </List>
     );
-  }
+}
 
 const Home: React.FC = (props: any) => {
     const [session, setSession] = React.useState("");
@@ -91,26 +124,24 @@ const Home: React.FC = (props: any) => {
     const [userEditing, setUserEditing] = 
       React.useState<EditingProps>({modalOpen: false});
 
+    const classes = useStyles();
 
 
+    // GraphQl constructs
     const {loading, error, data: itemsDto, refetch} = 
       useQuery<ItemsDtoT>(GET_TODOS, {variables: {session: session}});
     const [createTodoItem] = useMutation(CREATE_TODO, {update: () => refetch()});
     const [ deleteTodoItem] = useMutation(DELETE_TODO, {update: () => refetch()});
     const [editTodoItem] = useMutation(EDIT_TODO, {update: () => refetch()});
     const [toggleTodoItem] = useMutation(TOGGLE_TODO, {update: () => refetch()});
+    //--------------------
 
     React.useEffect(()=>{
         let session_no = window.localStorage.getItem("session_for_elixir_showcase");
         if (session_no != null) setSession(session_no);
         else setSession(uuidv4());
-    }, [])
+    }, []);
 
-
-    const classes = useStyles();
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("");
-      };
     return (
         <Container  
         style={{height: "100%"
@@ -163,68 +194,25 @@ const Home: React.FC = (props: any) => {
                             deleteTodoItem({variables: {id: userEditing.id}});
                         }
                         setUserEditing({modalOpen: false});
-                        refetch();
                     }}><DoneIcon/></Button>}}
                 />
                 </div>
             </Modal>
             <Grid item xs={12} md={6}>
             <Paper className={classes.demo}>
-                <List>
-                    {console.log(itemsDto)}
-                    {itemsDto?.items_for_session.filter(a => !a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
-                    <ListItem key={uuidv4()}>
-                        <ListItemAvatar>
-                            <Checkbox
-                            onChange = {() => {
-                                toggleTodoItem({variables: {id: todoItem.id}});
-                                refetch();
-                            }}
-                            inputProps={{ 'aria-label': 'primary checkbox' }}
-                            />
-                        </ListItemAvatar>
-                        <ListItemText onDoubleClick ={()=>setUserEditing({modalOpen: true, content: todoItem.content, id: todoItem.id})}
-                            primary={todoItem.content}
-                        />
-                        <ListItemSecondaryAction>
-                            <IconButton  edge="end" aria-label="delete" onClick = {
-                                () => { deleteTodoItem({variables: {id: todoItem.id}}) }  
-                            }>
-                            <DeleteIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>  
-                    )}
-                </List>
-                <List style={{backgroundColor: "grey"}}>
-                    {itemsDto?.items_for_session.filter(a => a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
-                    <ListItem key={uuidv4()}>
-                        <ListItemAvatar>
-                            <Checkbox
-                            defaultChecked={true}
-                            onChange = {() => {
-                                toggleTodoItem({variables: {id: todoItem.id}});
-                                refetch();
-                            }}
-                            inputProps={{ 'aria-label': 'primary checkbox' }}
-                            />
-                        </ListItemAvatar>
-                        <ListItemText style={{textDecoration: "line-through"}}
-                            primary={todoItem.content}
-                        />
-                        <ListItemSecondaryAction>
-                            <IconButton  edge="end" aria-label="delete" onClick = {
-                                () => {
-                                    deleteTodoItem({variables: {id: todoItem.id}});
-                                    refetch();
-                                }
-                            }>
-                            <DeleteIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>  
-                    )}
-                </List>
+                {itemsDto != undefined? <> 
+                  {TodoListWidget(
+                    itemsDto
+                    , (itemId: number) => toggleTodoItem({variables: {id: itemId}})
+                    , (itemId: number) => deleteTodoItem({variables: {id: itemId}})
+                    , (itemId: number, itemContent:string) => setUserEditing({modalOpen: true, content: itemContent, id: itemId})
+                  )}
+                  {TodoListWidget(
+                        itemsDto
+                        , (itemId: number) => toggleTodoItem({variables: {id: itemId}})
+                        , (itemId: number) => deleteTodoItem({variables: {id: itemId}})
+                   )}
+                </>:<></>}
             </Paper>
             </Grid>
         </Container>
