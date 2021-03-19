@@ -1,6 +1,5 @@
 import React, {Fragment} from "react";
 import {BrowserRouter as Router, Route} from 'react-router-dom'
-import Auth from './Components/Auth/Auth';
 import Home from './Components/Home/Home';
 
 import { 
@@ -28,7 +27,6 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
     <ApolloProvider client={client}>
       <Fragment>
       <Router>
-        <Route path="/" exact component={Auth} />
         <Route path="/home" exact component={Home} />
       </Router>
       </Fragment>

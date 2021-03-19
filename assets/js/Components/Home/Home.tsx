@@ -1,6 +1,5 @@
 import React from 'react';
 import {TextField
-    , Container
     , Grid
     , Button
     , Modal
@@ -15,6 +14,11 @@ import {TextField
     , ListItemText
     , Checkbox
     , Paper
+    , createMuiTheme
+    , ThemeProvider
+    , AppBar
+    , Toolbar
+    , Typography
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
@@ -42,18 +46,40 @@ interface EditingProps {
     id?: number;
 }
 
+interface CreatingProps {
+    modalOpen: boolean;
+    content?: string;
+}
+
+const pubTheme = createMuiTheme({
+    typography: {
+        htmlFontSize: 8,
+      fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
+    },
+  });
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-      maxWidth: 752,
     },
     demo: {
       backgroundColor: theme.palette.background.paper,
       marginTop: "1em",
       overflow: "auto",
-      height: "50vh"
+      height: "50vh",
     },
     title: {
       margin: theme.spacing(4, 0, 2),
@@ -64,10 +90,9 @@ const useStyles = makeStyles((theme: Theme) =>
         justifyContent: 'center',
     },
     paper: {
-        position: 'absolute',
-        width: 450,
+        width: "450px",
+        marginLeft: "5em",
         backgroundColor: theme.palette.background.paper,
-        boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
     },
   }),
@@ -78,11 +103,10 @@ const useStyles = makeStyles((theme: Theme) =>
 //  - List of items that are done
 const TodoListWidget = ({items_for_session}: ItemsDtoT, toggleCB: Function, deleteCB: Function, setUserEditingCB?: Function) =>{
     let doneList = setUserEditingCB? false:true;
-    let listStyle = doneList? {backgroundColor: "grey"}:{};
     let checked = doneList? true:false;
     let textStyle = doneList? {textDecoration: "line-through"}:{};
     return (
-        <List style={listStyle}>
+        <List>
         { // if it is done list then we seek the completed todo items , otherwise we seek the not yet iscompleted
           items_for_session.filter(a => doneList? a.isCompleted:!a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
         <ListItem key={uuidv4()}>
@@ -95,7 +119,7 @@ const TodoListWidget = ({items_for_session}: ItemsDtoT, toggleCB: Function, dele
                 inputProps={{ 'aria-label': 'primary checkbox' }}
                 />
             </ListItemAvatar>
-            <ListItemText style={textStyle} onDoubleClick ={()=> {
+            <ListItemText style={textStyle}  onDoubleClick ={()=> {
                 if(setUserEditingCB != null) {
                     setUserEditingCB(todoItem.id, todoItem.content);
                 }
@@ -119,8 +143,8 @@ const TodoListWidget = ({items_for_session}: ItemsDtoT, toggleCB: Function, dele
 
 const Home: React.FC = (props: any) => {
     const [session, setSession] = React.useState("");
-    const [modalOpen, setModalOpen] = React.useState(false);
-    const [textEntry, setTextEntry] = React.useState("");
+    const [userCreating, setUserCreating] = 
+      React.useState<CreatingProps>({modalOpen: false});
     const [userEditing, setUserEditing] = 
       React.useState<EditingProps>({modalOpen: false});
 
@@ -143,37 +167,44 @@ const Home: React.FC = (props: any) => {
     }, []);
 
     return (
-        <Container  
-        style={{height: "100%"
-        , backgroundColor: "#f5f5f5"
-        , padding: "4em"
-        }} 
-        maxWidth="xl">
-            <Button variant="contained" color="primary"  onClick={() => setModalOpen(true)}>
-            New
-            </Button>
-            <Modal
-            open={modalOpen}
-            onClose={()=>{setModalOpen(false)}}
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
-            >
+        <ThemeProvider theme={pubTheme}>
+            <AppBar position="static">
+            <Toolbar>
+                <Typography variant="h6" className={classes.title}>
+                Elixir GraphQL TODO
+                </Typography>
+            </Toolbar>
+            </AppBar>
+            <div className={classes.root}>
+            <Grid container direction="column" spacing={2} style={{paddingLeft:"3em"}}>
+                <Grid item xs={12} sm={6}>
+                    <Button variant="contained" color="primary"  onClick={() => setUserCreating({modalOpen: true})}>
+                    New
+                    </Button>
+                </Grid>
+                <Modal
+                open={userCreating.modalOpen}
+                onClose={()=>{setUserCreating({modalOpen: false})}}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+                className={classes.modal}
+                >
                 <div className={classes.paper}>
                 <TextField
                     rows = {5}
                     multiline
-                    onChange = {(e) => setTextEntry(e.target.value)}
+                    onChange = {(e) => setUserCreating({...userCreating, content: e.target.value}) }
                     id="standard-name"
                     InputProps={{endAdornment: <Button onClick={() => {
-                        if (textEntry != ""){
-                            createTodoItem({variables: { content: textEntry, session:  session }});
-                            setTextEntry("");
+                        if (userCreating.content != null && userCreating.content != ""){
+                            createTodoItem({variables: { content: userCreating.content, session:  session }});
+                            setUserCreating({...userCreating, content: ""});
                         }
-                        setModalOpen(false);
+                        setUserCreating({modalOpen: false});
                     }}><DoneIcon/></Button>}}
                 />
                 </div>
-            </Modal>
+                </Modal>
 
             <Modal
             open={userEditing.modalOpen}
@@ -198,7 +229,7 @@ const Home: React.FC = (props: any) => {
                 />
                 </div>
             </Modal>
-            <Grid item xs={12} md={6}>
+            <Grid item  xs={12} sm={6}>
             <Paper className={classes.demo}>
                 {itemsDto != undefined? <> 
                   {TodoListWidget(
@@ -215,7 +246,9 @@ const Home: React.FC = (props: any) => {
                 </>:<></>}
             </Paper>
             </Grid>
-        </Container>
+            </Grid>
+        </div>
+        </ThemeProvider>
         );
     }
     
