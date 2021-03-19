@@ -4,6 +4,7 @@ defmodule TodoApp.Graphql.Schema do
   object :item_dto do
     field :id, non_null(:id)  #ID!
     field :content, non_null(:string)
+    field :session, non_null(:string)
     field :is_completed, non_null(:boolean) do
       resolve fn %{completed_at: completed_at}, _, _ ->
         {:ok, !is_nil(completed_at)}

@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 const GET_TODOS = gql`
-    query GetTodos {
-        itemsDto {
+    query GetTodos($session: String!) {
+        items_for_session(session: $session) {
             id
             content
             isCompleted
@@ -10,8 +10,8 @@ const GET_TODOS = gql`
 `;
 
 const CREATE_TODO = gql`
-  mutation createTodoItem($content: String!) {
-    createTodoItem(content: $content)
+  mutation createTodoItem($session: String!, $content: String!) {
+    createTodoItem(session: $session, content: $content)
   }
 `;
 const DELETE_TODO = gql`

@@ -36,7 +36,7 @@ interface TodoItem {
     isCompleted: boolean;
 }
 type ItemsDtoT =  {
-    itemsDto: TodoItem[]
+    items_for_session: TodoItem[]
 }
 
 interface EditingProps {
@@ -85,6 +85,7 @@ function generate(element: React.ReactElement) {
   }
 
 const Home: React.FC = (props: any) => {
+    const [session, setSession] = React.useState("");
     const [modalOpen, setModalOpen] = React.useState(false);
     const [textEntry, setTextEntry] = React.useState("");
     const [userEditing, setUserEditing] = 
@@ -92,11 +93,18 @@ const Home: React.FC = (props: any) => {
 
 
 
-    const {loading, error, data: itemsDto, refetch} = useQuery<ItemsDtoT>(GET_TODOS);
-    const [createTodoItem] = useMutation(CREATE_TODO);
-    const [deleteTodoItem] = useMutation(DELETE_TODO);
-    const [editTodoItem] = useMutation(EDIT_TODO);
-    const [toggleTodoItem] = useMutation(TOGGLE_TODO);
+    const {loading, error, data: itemsDto, refetch} = 
+      useQuery<ItemsDtoT>(GET_TODOS, {variables: {session: session}});
+    const [createTodoItem] = useMutation(CREATE_TODO, {update: () => refetch()});
+    const [ deleteTodoItem] = useMutation(DELETE_TODO, {update: () => refetch()});
+    const [editTodoItem] = useMutation(EDIT_TODO, {update: () => refetch()});
+    const [toggleTodoItem] = useMutation(TOGGLE_TODO, {update: () => refetch()});
+
+    React.useEffect(()=>{
+        let session_no = window.localStorage.getItem("session_for_elixir_showcase");
+        if (session_no != null) setSession(session_no);
+        else setSession(uuidv4());
+    }, [])
 
 
     const classes = useStyles();
@@ -127,9 +135,8 @@ const Home: React.FC = (props: any) => {
                     id="standard-name"
                     InputProps={{endAdornment: <Button onClick={() => {
                         if (textEntry != ""){
-                            createTodoItem({variables: { content: textEntry  }});
+                            createTodoItem({variables: { content: textEntry, session:  session }});
                             setTextEntry("");
-                            refetch();
                         }
                         setModalOpen(false);
                     }}><DoneIcon/></Button>}}
@@ -164,7 +171,8 @@ const Home: React.FC = (props: any) => {
             <Grid item xs={12} md={6}>
             <Paper className={classes.demo}>
                 <List>
-                    {itemsDto?.itemsDto.filter(a => !a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
+                    {console.log(itemsDto)}
+                    {itemsDto?.items_for_session.filter(a => !a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
                     <ListItem key={uuidv4()}>
                         <ListItemAvatar>
                             <Checkbox
@@ -180,10 +188,7 @@ const Home: React.FC = (props: any) => {
                         />
                         <ListItemSecondaryAction>
                             <IconButton  edge="end" aria-label="delete" onClick = {
-                                () => {
-                                    deleteTodoItem({variables: {id: todoItem.id}});
-                                    refetch();
-                                }
+                                () => { deleteTodoItem({variables: {id: todoItem.id}}) }  
                             }>
                             <DeleteIcon />
                             </IconButton>
@@ -192,7 +197,7 @@ const Home: React.FC = (props: any) => {
                     )}
                 </List>
                 <List style={{backgroundColor: "grey"}}>
-                    {itemsDto?.itemsDto.filter(a => a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
+                    {itemsDto?.items_for_session.filter(a => a.isCompleted).slice().sort((a, b) => a.id - b.id) .map ( todoItem => 
                     <ListItem key={uuidv4()}>
                         <ListItemAvatar>
                             <Checkbox
