@@ -27,7 +27,7 @@ const App: React.FC<AppProps> = (_props: AppProps) => {
     <ApolloProvider client={client}>
       <Fragment>
       <Router>
-        <Route path="/home" exact component={Home} />
+        <Route path="/" exact component={Home} />
       </Router>
       </Fragment>
     </ApolloProvider>
