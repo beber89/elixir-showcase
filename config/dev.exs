@@ -2,7 +2,6 @@ use Mix.Config
 
 # Configure your database
 config :todo_app, TodoApp.Repo,
-  ## TODO: Take from env vars
   # url: "postgres://postgres:postgres@db:5432/todo_app_dev",
   username: "postgres",
   password: "postgres",
