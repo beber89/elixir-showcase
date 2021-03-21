@@ -12,7 +12,7 @@ import {
 
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
   cache: new InMemoryCache(),
-  uri: 'http://localhost:4000/api',
+  uri: 'https://acrobatic-exalted-karakul.gigalixirapp.com/api',
   resolvers: {}
 });
 
